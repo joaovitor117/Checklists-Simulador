@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>Checklist</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.97/pdf.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.97/pdf.worker.min.js"></script>
 </head>
 <body class="h-screen m-0">
 <div class="flex h-full font-sans">
@@ -41,29 +44,52 @@
         
         <!-- main-container -->
 
-        <div class="main-container flex-1 h-full bg-neutral-100">
-            <embed id="pdf-viewer" src="" type="application/pdf" class="w-full h-full border-0"></embed>  
+        <div class="main-container flex-1 h-full bg-neutral-100 overflow-auto"> 
+            <div id="pdf-container" class="w-full h-full p-4 overflow-auto"></div> 
         </div>
 
     </div>
 
         <script>
             const links = document.querySelectorAll('.pdf-link');
-            const viewer = document.getElementById('pdf-viewer');
+            const container = document.getElementById('pdf-container');
+
+            let isExpanded = true
+            const sidebar = document.querySelector('.side-bar');
+            const toggleButton = document.getElementById('toggleSidebar');
+            const title = document.querySelector('h2');
+            const menu = document.querySelector('.menu');
 
             links.forEach(link => {
                 link.addEventListener('click', function(event) {
                     event.preventDefault();
                     const pdfUrl = this.getAttribute('href');
-                    viewer.src = pdfUrl;
+                    loadPDF(pdfUrl);
                 });
             });
-            let isExpanded = true;
 
-            const sidebar = document.querySelector('.side-bar');
-            const toggleButton = document.getElementById('toggleSidebar');
-            const title = document.querySelector('h2');
-            const menu = document.querySelector('.menu');
+            async function loadPDF(url) {
+                container.innerHTML = "";
+                const pdf = await pdfjsLib.getDocument(url).promise;
+
+                isExpanded = false; 
+                sidebar.className = "w-16 bg-gray-800 text-white p-4 transition-all duration-1000"; 
+                title.classList.add('hidden'); 
+                menu.classList.add('hidden');
+
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) { 
+                    const page = await pdf.getPage(pageNum); 
+                    const viewport = page.getViewport({ scale: 1.2 });
+                    const canvas = document.createElement('canvas'); 
+                    const context = canvas.getContext('2d'); 
+                    canvas.height = viewport.height; 
+                    canvas.width = viewport.width; 
+                    container.appendChild(canvas);
+
+                    const renderContext = { canvasContext: context, viewport: viewport }; 
+                    await page.render(renderContext).promise;
+                }
+            }
 
             toggleButton.addEventListener('click', () => {
                 isExpanded = !isExpanded;
@@ -75,18 +101,21 @@
                 title.classList.toggle('hidden', !isExpanded);
                 menu.classList.toggle('hidden', !isExpanded);
     });
-                document.addEventListener('keydown', function(event) {
-                    event.key === 'Escape' && (
+                document.addEventListener('keydown', (event) => {
+                   let escPressed = event.key === 'Escape'; 
+                    escPressed && (
                         isExpanded = true,
                         sidebar.className = "w-64 bg-gray-800 text-white p-4 transition-all duration-1000",
                         title.classList.remove('hidden'),
                         menu.classList.remove('hidden'),
-                        viewer.src = "")
-                    });
+                        container.innerHTML = ""
+                    );
+                });
         </script>
 </body>
 
 </html>
+
 
 
 
