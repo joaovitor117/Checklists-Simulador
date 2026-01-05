@@ -101,20 +101,21 @@
                 title.classList.toggle('hidden', !isExpanded);
                 menu.classList.toggle('hidden', !isExpanded);
     });
-                document.addEventListener('keydown', (event) => {
-                   let escPressed = event.key === 'Escape'; 
-                    escPressed && (
-                        isExpanded = true,
-                        sidebar.className = "w-64 bg-gray-800 text-white p-4 transition-all duration-1000",
-                        title.classList.remove('hidden'),
-                        menu.classList.remove('hidden'),
-                        container.innerHTML = ""
-                    );
+                document.addEventListener('keydown', (event) => { 
+                    let escPressed = event.key === 'Escape'; 
+                    escPressed && ( 
+                        isExpanded = true, 
+                        sidebar.className = "w-64 bg-gray-800 text-white p-4 transition-all duration-1000", 
+                        title.classList.remove('hidden'), 
+                        menu.classList.remove('hidden'), 
+                        container.innerHTML = "" 
+                    ); 
                 });
         </script>
 </body>
 
 </html>
+
 
 
 
