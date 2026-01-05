@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Checklist</title>
+</head>
+<body class="h-screen m-0">
+<div class="flex h-full font-sans">
+
+        <!-- side-bar -->
+        
+        <div class="side-bar flex flex-col w-64 h-screen bg-gray-800 text-white p-4">
+            <h2 class="ml-2 mb-4 text-[32px]">Checklist</h2>
+            <div class="checklist">
+                <button id="toggleSidebar" class="bg-blue-800 text-white pl-3 pr-3 pt-2 pb-2 rounded-2xl duration-300 mb-4">☰</button>
+                <ul class="menu space-y-2">
+
+                        <details class="ml-2 bg-white text-black p-2 rounded-lg"><summary>Boeing</summary>
+                            <li><a href="/Projetos/Checklist/src/Img/B737.pdf" class="pdf-link">B737</a></li>
+                            <li><a href="/Projetos/Checklist/src/Img/B777.pdf" class="pdf-link">B777</a></li>
+                        </details>
+
+                        <details class="ml-2 bg-white text-black p-2 rounded-lg"><summary>Airbus</summary>
+                            <li><a href="/Projetos/Checklist/src/Img/A320.pdf" class="pdf-link">A320</a></li>
+                            <li><a href="/Projetos/Checklist/src/Img/A300.pdf" class="pdf-link">A300</a></li>
+                            <li><a href="/Projetos/Checklist/src/Img/A310.pdf" class="pdf-link">A310</a></li>
+                        </details>
+
+                        <details class="ml-2 bg-white text-black p-2 rounded-lg"><summary>Mad Dog</summary>
+                            <li><a href="/Projetos/Checklist/src/Img/MD82.pdf" class="pdf-link">MD-82</a></li>
+                        </details>
+
+                        <details class="ml-2 bg-white text-black p-2 rounded-lg"><summary>Atr</summary>
+                            <li><a href="/Projetos/Checklist/src/Img/ATR.pdf" class="pdf-link">Atr-76</a></li>
+                        </details>
+                </ul>    
+            </div>
+        </div>
+        
+        <!-- main-container -->
+
+        <div class="main-container flex-1 h-full bg-neutral-100">
+            <iframe id="pdf-viewer" src="" class="w-full h-full border-0"></iframe>  
+        </div>
+
+    </div>
+
+        <script>
+            const links = document.querySelectorAll('.pdf-link');
+            const viewer = document.getElementById('pdf-viewer');
+
+            links.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const pdfUrl = this.getAttribute('href');
+                    viewer.src = pdfUrl;
+                });
+            });
+            let isExpanded = true;
+
+            const sidebar = document.querySelector('.side-bar');
+            const toggleButton = document.getElementById('toggleSidebar');
+            const title = document.querySelector('h2');
+            const menu = document.querySelector('.menu');
+
+            toggleButton.addEventListener('click', () => {
+                isExpanded = !isExpanded;
+
+                sidebar.className = isExpanded
+                ? "w-64 bg-gray-800 text-white p-4 transition-all duration-1000"
+                : "w-16 bg-gray-800 text-white p-4 transition-all duration-1000";
+                
+                title.classList.toggle('hidden', !isExpanded);
+                menu.classList.toggle('hidden', !isExpanded);
+    });
+                document.addEventListener('keydown', function(event) {
+                    event.key === 'Escape' && (
+                        isExpanded = true,
+                        sidebar.className = "w-64 bg-gray-800 text-white p-4 transition-all duration-1000",
+                        title.classList.remove('hidden'),
+                        menu.classList.remove('hidden'),
+                        viewer.src = "")
+                    });
+        </script>
+</body>
+</html>
