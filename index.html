@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>Checklist</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/legacy/build/pdf.min.js"></script> 
-    <script> pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/legacy/build/pdf.worker.min.js"; </script>
 </head>
 <body class="h-screen m-0">
 <div class="flex h-full font-sans">
@@ -41,18 +38,17 @@
                 </ul>    
             </div>
         </div>
-        
-        <!-- main-container -->
 
         <div class="main-container flex-1 h-full bg-neutral-100 overflow-auto"> 
-            <div id="pdf-container" class="w-full h-full p-4 overflow-auto"></div> 
-        </div>
+            <embed id="pdf-frame" class="w-full h-full border-0" type="application/pdf"> 
+        </div> 
+</div>
 
     </div>
 
         <script>
             const links = document.querySelectorAll('.pdf-link');
-            const container = document.getElementById('pdf-container');
+            const pdfFrame = document.getElementById('pdf-frame');
 
             let isExpanded = true
             const sidebar = document.querySelector('.side-bar');
@@ -64,32 +60,13 @@
                 link.addEventListener('click', function(event) {
                     event.preventDefault();
                     const pdfUrl = this.getAttribute('href');
-                    loadPDF(pdfUrl);
+                    pdfFrame.src = pdfUrl;
+                    isExpanded = false; 
+                    sidebar.className = "w-16 bg-gray-800 text-white p-4 transition-all duration-1000"; 
+                    title.classList.add('hidden'); 
+                    menu.classList.add('hidden');
                 });
             });
-
-            async function loadPDF(url) {
-                container.innerHTML = "";
-                const pdf = await pdfjsLib.getDocument(url).promise;
-
-                isExpanded = false; 
-                sidebar.className = "w-16 bg-gray-800 text-white p-4 transition-all duration-1000"; 
-                title.classList.add('hidden'); 
-                menu.classList.add('hidden');
-
-                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) { 
-                    const page = await pdf.getPage(pageNum); 
-                    const viewport = page.getViewport({ scale: 1.2 });
-                    const canvas = document.createElement('canvas'); 
-                    const context = canvas.getContext('2d'); 
-                    canvas.height = viewport.height; 
-                    canvas.width = viewport.width; 
-                    container.appendChild(canvas);
-
-                    const renderContext = { canvasContext: context, viewport: viewport }; 
-                    await page.render(renderContext).promise;
-                }
-            }
 
             toggleButton.addEventListener('click', () => {
                 isExpanded = !isExpanded;
@@ -108,13 +85,14 @@
                         sidebar.className = "w-64 bg-gray-800 text-white p-4 transition-all duration-1000", 
                         title.classList.remove('hidden'), 
                         menu.classList.remove('hidden'), 
-                        container.innerHTML = "" 
+                        pdfFrame.src = "" 
                     ); 
                 });
         </script>
 </body>
 
 </html>
+
 
 
 
